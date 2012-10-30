@@ -1,0 +1,33 @@
+Battle:
+|
+|Menus
+|-Fight
+|--attack
+|--fire
+|
+|Battle Log
+|-damage
+|-status effect
+|
+|Animations
+|-idle
+|-attack
+|-hit
+
+Prototype:
+|
+|Title Screen
+|-logo
+|-start prompt
+|-copyright
+|
+|Battle
+|-boss type battle
+|-hard (possibility of failure)
+|--equal toughness to player
+|--stronger attacks
+|
+|Game Over
+|-win/lose message
+|-prompt to play again
+|--if no, exit

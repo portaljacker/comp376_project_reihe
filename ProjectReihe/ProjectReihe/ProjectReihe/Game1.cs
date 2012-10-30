@@ -19,6 +19,11 @@ namespace ProjectReihe
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        SpriteFont _spr_font;
+        int _total_frames = 0;
+        float _elapsed_time = 0.0f;
+        int _fps = 0;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -44,6 +49,8 @@ namespace ProjectReihe
         /// </summary>
         protected override void LoadContent()
         {
+            // Put the name of the font
+            _spr_font = Content.Load<SpriteFont>("FPS");
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -66,6 +73,23 @@ namespace ProjectReihe
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            // Update
+            _elapsed_time += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+ 
+            // 1 Second has passed
+            if (_elapsed_time >= 1000.0f)
+            {
+                _fps = _total_frames;
+                _total_frames = 0;
+                _elapsed_time = 0;
+            }
+ 
+            // Allows the game to exit
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+                this.Exit();
+ 
+            base.Update(gameTime);
+
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
@@ -84,7 +108,13 @@ namespace ProjectReihe
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            spriteBatch.Begin();
+            // Only update total frames when drawing
+            _total_frames++;
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            spriteBatch.DrawString(_spr_font, string.Format("FPS={0}", _fps), Vector2.Zero, Color.White);
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }
