@@ -154,6 +154,11 @@ namespace ProjectReihe
 
         #region Keyboard Region
 
+        public void Flush()
+        {
+            lastKeyboardState = keyboardState;
+        }
+
         public bool KeyReleased(Keys key)
         {
             return keyboardState.IsKeyUp(key) &&
