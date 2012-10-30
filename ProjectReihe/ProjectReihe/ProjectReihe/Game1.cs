@@ -19,6 +19,19 @@ namespace ProjectReihe
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        enum GameState
+        {
+            TitleScreen,
+            Battle,
+            GameOver
+        }
+        GameState currentGameState = GameState.Battle;
+
+        Menu menu;
+        SpriteFont arial;
+        KeyboardState keyboardState;
+        KeyboardState lastKeyboardState;
+
         SpriteFont _spr_font;
         int _total_frames = 0;
         float _elapsed_time = 0.0f;
@@ -39,6 +52,10 @@ namespace ProjectReihe
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
+
+            menu = new Menu(Menu.MenuType.Battle);
 
             base.Initialize();
         }
@@ -51,6 +68,7 @@ namespace ProjectReihe
         {
             // Put the name of the font
             _spr_font = Content.Load<SpriteFont>("FPS");
+            arial = Content.Load<SpriteFont>("Arial");
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -73,6 +91,8 @@ namespace ProjectReihe
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            lastKeyboardState = keyboardState;
+            keyboardState = Keyboard.GetState();
             // Update
             _elapsed_time += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
  
@@ -85,14 +105,28 @@ namespace ProjectReihe
             }
  
             // Allows the game to exit
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || keyboardState.IsKeyDown(Keys.Escape))
                 this.Exit();
- 
-            base.Update(gameTime);
 
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
+            switch(currentGameState)
+            {
+                case GameState.Battle:
+                    if (KeyPressed(Keys.Down))
+                        menu.Iterator += 1;
+                    else if (KeyPressed(Keys.Up))
+                        menu.Iterator -= 1;
+                    else if (KeyPressed(Keys.Space))
+                    {
+                        if (menu.CurrentMenuType == Menu.MenuType.Battle && menu.Iterator == 0)
+                            menu = new Menu(Menu.MenuType.Fight);
+                    }
+                    else if (KeyPressed(Keys.Back))
+                    {
+                        if (menu.CurrentMenuType == Menu.MenuType.Fight)
+                            menu = new Menu(Menu.MenuType.Battle);
+                    }
+                    break;
+            }
 
             // TODO: Add your update logic here
 
@@ -105,17 +139,36 @@ namespace ProjectReihe
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.DarkGreen);
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
             // Only update total frames when drawing
             _total_frames++;
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            menu.DrawMenu(spriteBatch, graphics.PreferredBackBufferWidth, arial);
 
             spriteBatch.DrawString(_spr_font, string.Format("FPS={0}", _fps), Vector2.Zero, Color.White);
             spriteBatch.End();
             base.Draw(gameTime);
         }
+
+        #region Keyboard Region
+
+        public bool KeyReleased(Keys key)
+        {
+            return keyboardState.IsKeyUp(key) &&
+            lastKeyboardState.IsKeyDown(key);
+        }
+        public bool KeyPressed(Keys key)
+        {
+            return keyboardState.IsKeyDown(key) &&
+            lastKeyboardState.IsKeyUp(key);
+        }
+        public bool KeyDown(Keys key)
+        {
+            return keyboardState.IsKeyDown(key);
+        }
+
+        #endregion
     }
 }
