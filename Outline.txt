@@ -44,3 +44,17 @@ Prototype:
 |-win/lose message
 |-prompt to play again
 |--if no, exit
+|
+|Character
+|-HP: 350
+|-ATK: 50
+|-MATK: 40
+|-DEF: 25
+|-MDEF: 15
+|
+|Boss
+|-HP: 500
+|-ATK: 75
+|-MATK: 35
+|-DEF: 30
+|-MDEF: 25
