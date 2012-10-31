@@ -28,9 +28,16 @@ namespace ProjectReihe
         GameState currentGameState = GameState.Battle;
 
         Menu menu;
-        SpriteFont arial;
+        SpriteFont menuFont;
         KeyboardState keyboardState;
         KeyboardState lastKeyboardState;
+
+        List<Skills.Skill> chain;
+        int skillCount = 0;
+        bool fighting = false;
+
+        Character cadwyn;
+        Character bossSlime;
 
         SpriteFont _spr_font;
         int _total_frames = 0;
@@ -41,6 +48,9 @@ namespace ProjectReihe
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
         }
 
         /// <summary>
@@ -51,11 +61,12 @@ namespace ProjectReihe
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = 720;
+            // TODO: Add your initialization logic 
 
             menu = new Menu(Menu.MenuType.Battle);
+            chain = new List<Skills.Skill>();
+            cadwyn = new Character(Character.CharacterType.Cadwyn);
+            bossSlime = new Character(Character.CharacterType.BossSlime);
 
             base.Initialize();
         }
@@ -68,7 +79,7 @@ namespace ProjectReihe
         {
             // Put the name of the font
             _spr_font = Content.Load<SpriteFont>("FPS");
-            arial = Content.Load<SpriteFont>("Arial");
+            menuFont = Content.Load<SpriteFont>("MenuFont");
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -119,11 +130,55 @@ namespace ProjectReihe
                     {
                         if (menu.CurrentMenuType == Menu.MenuType.Battle && menu.Iterator == 0)
                             menu = new Menu(Menu.MenuType.Fight);
+                        else if (menu.CurrentMenuType == Menu.MenuType.Fight)
+                        {
+                            if (skillCount < 3)
+                            {
+                                switch (menu.Iterator)
+                                {
+                                    case 0:
+                                        chain.Add(Skills.Skill.Attack);
+                                        menu.InfoText += "Attack ";
+                                        skillCount++;
+                                        if (skillCount == 3)
+                                            fighting = true;
+                                        break;
+                                    case 1:
+                                        chain.Add(Skills.Skill.Fire);
+                                        menu.InfoText += "Fire ";
+                                        skillCount++;
+                                        if (skillCount == 3)
+                                            fighting = true;
+                                        break;
+                                }
+                            }
+                        }
                     }
                     else if (KeyPressed(Keys.Back))
                     {
                         if (menu.CurrentMenuType == Menu.MenuType.Fight)
+                        {
                             menu = new Menu(Menu.MenuType.Battle);
+                            skillCount = 0;
+                            chain = new List<Skills.Skill>();
+                            menu.InfoText = string.Empty;
+                        }
+                    }
+                    if (skillCount == 3)
+                    {
+                        List<Skills.Skill> slimeChain = new List<Skills.Skill>();
+                        slimeChain.Add(Skills.Skill.Attack);
+                        slimeChain.Add(Skills.Skill.Fire);
+                        slimeChain.Add(Skills.Skill.Attack);
+                        Console.WriteLine(string.Format("Boss Slime HP before: {0:0}/{1:0}", bossSlime.HP, bossSlime.MaxHP));
+                        cadwyn.attack(bossSlime, chain);
+                        Console.WriteLine(string.Format("Boss Slime HP after: {0:0}/{1:0}", bossSlime.HP, bossSlime.MaxHP));
+                        Console.WriteLine(string.Format("Cadwyn HP before: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP));
+                        bossSlime.attack(cadwyn, slimeChain);
+                        Console.WriteLine(string.Format("Cadwyn HP before: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP)); fighting = false;
+                        skillCount = 0;
+                        chain = new List<Skills.Skill>();
+                        menu.InfoText = String.Empty;
                     }
                     break;
             }
@@ -145,7 +200,12 @@ namespace ProjectReihe
             spriteBatch.Begin();
             // Only update total frames when drawing
             _total_frames++;
-            menu.DrawMenu(spriteBatch, graphics.PreferredBackBufferWidth, arial);
+
+            if (!fighting)
+            {
+                menu.DrawMenu(spriteBatch, graphics.PreferredBackBufferWidth, menuFont);
+                spriteBatch.DrawString(menuFont, menu.InfoText, new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), Color.White);
+            }
 
             spriteBatch.DrawString(_spr_font, string.Format("FPS={0}", _fps), Vector2.Zero, Color.White);
             spriteBatch.End();

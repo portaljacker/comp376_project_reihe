@@ -65,7 +65,13 @@ namespace ProjectReihe
         }
 
         int _maxHP; //maximum health
-        bool _burned = false;    //is burned?
+        public int MaxHP
+        {
+            get
+            {
+                return _maxHP;
+            }
+        }
         public bool Burned { get; set; }
 
         public Character(CharacterType type)
@@ -74,6 +80,7 @@ namespace ProjectReihe
             {
                 case CharacterType.Cadwyn:
                     _hp = 350;
+                    _maxHP = 350;
                     _atk = 50;
                     _matk = 40;
                     _def = 25;
@@ -81,6 +88,7 @@ namespace ProjectReihe
                     break;
                 case CharacterType.BossSlime:
                     _hp = 500;
+                    _maxHP = 500;
                     _atk = 75;
                     _matk = 35;
                     _def = 30;
