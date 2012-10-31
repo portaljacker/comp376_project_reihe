@@ -8,6 +8,12 @@ namespace ProjectReihe
     {
         Random roll = new Random(); //roll determines chance to crit (2x damage)
 
+        public enum CharacterType
+        {
+            Cadwyn,
+            BossSlime
+        }
+
         int _hp;    //health
         public int HP
         {
@@ -62,6 +68,27 @@ namespace ProjectReihe
         bool _burned = false;    //is burned?
         public bool Burned { get; set; }
 
+        public Character(CharacterType type)
+        {
+            switch (type)
+            {
+                case CharacterType.Cadwyn:
+                    _hp = 350;
+                    _atk = 50;
+                    _matk = 40;
+                    _def = 25;
+                    _mdef = 15;
+                    break;
+                case CharacterType.BossSlime:
+                    _hp = 500;
+                    _atk = 75;
+                    _matk = 35;
+                    _def = 30;
+                    _mdef = 25;
+                    break;
+            }
+        }
+
         public void attack(Character enemy, List<Skills.Skill> chain)
         {
             int bonus = 0;  //bonus magic damage as percent of magic attack
@@ -87,16 +114,25 @@ namespace ProjectReihe
                     }
                     else if (chain[2] == Skills.Skill.Fire)
                     {
-                        enemy.HP -= this.MATK - enemy.MDEF;
+                        if (enemy.Burned == true)
+                            enemy.HP -= this.MATK - enemy.MDEF / 2;
+                        else
+                            enemy.HP -= this.MATK - enemy.MDEF;
                     }
                 }
                 else if (chain[1] == Skills.Skill.Fire)
                 {
-                    enemy.HP -= this.MATK - enemy.MDEF;
+                    if (enemy.Burned == true)
+                        enemy.HP -= this.MATK - enemy.MDEF / 2;
+                    else
+                        enemy.HP -= this.MATK - enemy.MDEF;
                     if (chain[2] == Skills.Skill.Attack)
                     {
                         bonus += 10;
-                        enemy.HP -= this.MATK / bonus - enemy.MDEF;
+                        if (enemy.Burned == true)
+                            enemy.HP -= this.MATK / bonus - enemy.MDEF / 2;
+                        else
+                            enemy.HP -= this.MATK / bonus - enemy.MDEF;
                         if (roll.Next(6) == 0)
                         {
                             enemy.HP -= this.ATK * 2 - enemy.DEF;
@@ -108,7 +144,10 @@ namespace ProjectReihe
                     }
                     else if (chain[2] == Skills.Skill.Fire)
                     {
-                        enemy.HP -= this.MATK - enemy.MDEF;
+                        if (enemy.Burned == true)
+                            enemy.HP -= this.MATK - enemy.MDEF / 2;
+                        else
+                            enemy.HP -= this.MATK - enemy.MDEF;
                         enemy.Burned = true;
                     }
                 }
@@ -119,7 +158,10 @@ namespace ProjectReihe
                 if (chain[1] == Skills.Skill.Attack)
                 {
                     bonus += 10;
-                    enemy.HP -= this.MATK / bonus - enemy.MDEF;
+                    if (enemy.Burned == true)
+                        enemy.HP -= this.MATK / bonus - enemy.MDEF / 2;
+                    else
+                        enemy.HP -= this.MATK /bonus - enemy.MDEF;
                     if (chain[2] == Skills.Skill.Attack)
                     {
                         if (roll.Next(10) == 0)
@@ -129,13 +171,19 @@ namespace ProjectReihe
                     }
                     else if (chain[2] == Skills.Skill.Fire)
                     {
-                        enemy.HP -= this.MATK - enemy.MDEF;
+                        if (enemy.Burned == true)
+                            enemy.HP -= this.MATK - enemy.MDEF / 2;
+                        else
+                            enemy.HP -= this.MATK - enemy.MDEF;
                         enemy.Burned = true;
                     }
                 }
                 else if (chain[1] == Skills.Skill.Fire)
                 {
-                    enemy.HP -= this.MATK - enemy.MDEF;
+                    if (enemy.Burned == true)
+                        enemy.HP -= this.MATK - enemy.MDEF / 2;
+                    else
+                        enemy.HP -= this.MATK - enemy.MDEF;
                     enemy.Burned = true;
                     if (chain[2] == Skills.Skill.Attack)
                     {
@@ -144,12 +192,18 @@ namespace ProjectReihe
                         else
                             enemy.HP -= this.ATK - enemy.DEF;
                         bonus += 10;
-                        enemy.HP -= this.MATK / bonus - enemy.MDEF;
+                        if (enemy.Burned == true)
+                            enemy.HP -= this.MATK / bonus - enemy.MDEF / 2;
+                        else
+                            enemy.HP -= this.MATK / bonus - enemy.MDEF;
                     }
                     else if (chain[2] == Skills.Skill.Fire)
                     {
                         //FIREBALL!!!
-                        enemy.HP -= this.MATK * 2 - enemy.MDEF;
+                        if (enemy.Burned == true)
+                            enemy.HP -= this.MATK * 2 - enemy.MDEF / 2;
+                        else
+                            enemy.HP -= this.MATK * 2 - enemy.MDEF;
                     }
                 }
             }
