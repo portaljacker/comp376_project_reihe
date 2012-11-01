@@ -34,7 +34,10 @@ namespace ProjectReihe
 
         List<Skills.Skill> chain;
         int skillCount = 0;
-        bool fighting = false;
+        bool showMenu = false;
+
+        float battleTimer = 0.0f;
+        int battleStep = 0;
 
         Character cadwyn;
         Character bossSlime;
@@ -65,8 +68,8 @@ namespace ProjectReihe
 
             menu = new Menu(Menu.MenuType.Battle);
             chain = new List<Skills.Skill>();
-            cadwyn = new Character(Character.CharacterType.Cadwyn);
-            bossSlime = new Character(Character.CharacterType.BossSlime);
+            cadwyn = new Character(Character.CharacterType.Cadwyn, Content.Load<Texture2D>("cadwynsheet"), new Vector2(graphics.PreferredBackBufferWidth - (385/2 * 1.5f + 25), graphics.PreferredBackBufferHeight - (327/2 * 1.5f + 25)), 384, 327);
+            bossSlime = new Character(Character.CharacterType.BossSlime, Content.Load<Texture2D>("slimesheet"), new Vector2(25 + 384/2 * 1.5f, 25 + 327/2 * 1.5f), 384, 327);
 
             base.Initialize();
         }
@@ -106,6 +109,7 @@ namespace ProjectReihe
             keyboardState = Keyboard.GetState();
             // Update
             _elapsed_time += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+            battleTimer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
  
             // 1 Second has passed
             if (_elapsed_time >= 1000.0f)
@@ -113,6 +117,65 @@ namespace ProjectReihe
                 _fps = _total_frames;
                 _total_frames = 0;
                 _elapsed_time = 0;
+            }
+
+            if (showMenu)
+            {
+                switch (battleStep)
+                {
+                    case 0:
+                        if (battleTimer >= 500.0f)
+                        {
+                            cadwyn.CurrrentFrame++;
+                            battleTimer = 0;
+                            battleStep++;
+                        }
+                        break;
+                    case 1:
+                        if (battleTimer >= 750.0f)
+                        {
+                            cadwyn.CurrrentFrame = 0;
+                            bossSlime.Position -= new Vector2(25, 0);
+                            battleTimer = 0;
+                            battleStep++;
+                        }
+                        break;
+                    case 2:
+                        if (battleTimer >= 750.0f)
+                        {
+                            bossSlime.Position += new Vector2(25, 0);
+                            battleTimer = 0;
+                            battleStep++;
+                        }
+                        break;
+                    case 3:
+                        if (battleTimer >= 1000.0f)
+                        {
+                            bossSlime.Position += new Vector2(25, 0);
+                            battleTimer = 0;
+                            battleStep++;
+                        }
+                        break;
+                    case 4:
+                        if (battleTimer >= 500.0f)
+                        {
+                            bossSlime.Position -= new Vector2(25, 0);
+                            cadwyn.Position += new Vector2(25, 0);
+                            battleTimer = 0;
+                            battleStep++;
+                        }
+                        break;
+                    case 5:
+                        if (battleTimer >= 500.0f)
+                        {
+                            cadwyn.Position -= new Vector2(25, 0);
+                            battleTimer = 0;
+                            battleStep = 0;
+                            showMenu = false;
+                        }
+                        break;
+                }
+               
             }
  
             // Allows the game to exit
@@ -141,14 +204,18 @@ namespace ProjectReihe
                                         menu.InfoText += "Attack ";
                                         skillCount++;
                                         if (skillCount == 3)
-                                            fighting = true;
+                                            showMenu = true;
                                         break;
                                     case 1:
                                         chain.Add(Skills.Skill.Fire);
                                         menu.InfoText += "Fire ";
                                         skillCount++;
                                         if (skillCount == 3)
-                                            fighting = true;
+                                        {
+                                            showMenu = true;
+                                            chain = new List<Skills.Skill>();
+                                            menu.InfoText = String.Empty;
+                                        }
                                         break;
                                 }
                             }
@@ -175,10 +242,9 @@ namespace ProjectReihe
                         Console.WriteLine(string.Format("Boss Slime HP after: {0:0}/{1:0}", bossSlime.HP, bossSlime.MaxHP));
                         Console.WriteLine(string.Format("Cadwyn HP before: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP));
                         bossSlime.attack(cadwyn, slimeChain);
-                        Console.WriteLine(string.Format("Cadwyn HP before: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP)); fighting = false;
+                        Console.WriteLine(string.Format("Cadwyn HP before: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP));
+                        //showMenu = false;
                         skillCount = 0;
-                        chain = new List<Skills.Skill>();
-                        menu.InfoText = String.Empty;
                     }
                     break;
             }
@@ -201,11 +267,14 @@ namespace ProjectReihe
             // Only update total frames when drawing
             _total_frames++;
 
-            if (!fighting)
+            if (!showMenu)
             {
                 menu.DrawMenu(spriteBatch, graphics.PreferredBackBufferWidth, menuFont);
-                spriteBatch.DrawString(menuFont, menu.InfoText, new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), Color.White);
             }
+            spriteBatch.DrawString(menuFont, menu.InfoText, new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), Color.White);
+
+            cadwyn.Draw(spriteBatch, 1.5f);
+            bossSlime.Draw(spriteBatch, 1.5f);
 
             spriteBatch.DrawString(_spr_font, string.Format("FPS={0}", _fps), Vector2.Zero, Color.White);
             spriteBatch.End();

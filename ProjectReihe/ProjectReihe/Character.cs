@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace ProjectReihe
 {
-    class Character
+    class Character : Sprite
     {
         Random roll = new Random(); //roll determines chance to crit (2x damage)
 
@@ -72,9 +74,12 @@ namespace ProjectReihe
                 return _maxHP;
             }
         }
+
+        public int PreviousHealth { get; set; }
         public bool Burned { get; set; }
 
-        public Character(CharacterType type)
+        public Character(CharacterType type, Texture2D newTexture, Vector2 newPosition, int newWidth, int newHeight)
+            : base(newTexture, newPosition, newWidth, newHeight)
         {
             switch (type)
             {
@@ -99,6 +104,7 @@ namespace ProjectReihe
 
         public void attack(Character enemy, List<Skills.Skill> chain)
         {
+            PreviousHealth = _hp;
             int bonus = 0;  //bonus magic damage as percent of magic attack
 
             if (chain[0] == Skills.Skill.Attack)
@@ -214,6 +220,19 @@ namespace ProjectReihe
                             enemy.HP -= this.MATK * 2 - enemy.MDEF;
                     }
                 }
+            }
+        }
+
+        public void Draw(SpriteBatch spriteBatch, float scale)
+        {
+            if (Burned)
+            {
+                spriteBatch.Draw(Texture, Position, SourceRect, Color.Red, 0f, Origin, scale, SpriteEffects.None, 0);
+            }
+            else
+            {
+                base.Draw(spriteBatch, scale, SourceRect);
+
             }
         }
     }
