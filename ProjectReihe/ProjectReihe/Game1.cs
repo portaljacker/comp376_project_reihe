@@ -283,12 +283,12 @@ namespace ProjectReihe
                             Console.WriteLine(string.Format("Cadwyn HP after: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP));
                             showMenu = true;
                             if (bossSlime.HP == 0)
-                                win = true;
-                            else if (cadwyn.HP == 0)
                             {
-                                win = false;
+                                win = true;
                                 cadwyn.HP = cadwyn.PreviousHealth;
                             }
+                            else if (cadwyn.HP == 0)
+                                win = false;
                         }
                     }
 
@@ -353,8 +353,8 @@ namespace ProjectReihe
                             graphics.PreferredBackBufferHeight / 2 - endFont1.MeasureString("Game Over. You lose!").Y), Color.LightGray);
                     DrawShadowedText(endFont2, "Thank you for playing!", new Vector2(graphics.PreferredBackBufferWidth / 2 - endFont2.MeasureString("Thank you for playing!").X / 2,
                         graphics.PreferredBackBufferHeight / 2 - endFont2.MeasureString("Thank you for playing!").Y + 50), Color.LightGray);
-                    DrawShadowedText(endFont3, "Made by Team 11", new Vector2(graphics.PreferredBackBufferWidth - endFont3.MeasureString("Made by Team 11").X,
-                        graphics.PreferredBackBufferHeight - endFont3.MeasureString("Made by Team 11").Y), Color.LightGray);
+                    DrawShadowedText(endFont3, "Made by Team 11, Battle Theme: \"Ghostpocalypse - 7 Master\" by Kevin MacLeod", new Vector2(graphics.PreferredBackBufferWidth - endFont3.MeasureString("Made by Team 11").X,
+                        graphics.PreferredBackBufferHeight - endFont3.MeasureString("Made by Team 11, Battle Theme: \"Ghostpocalypse - 7 Master\" by Kevin MacLeod").Y), Color.LightGray);
                     break;
             }
 
