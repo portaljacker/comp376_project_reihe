@@ -25,10 +25,14 @@ namespace ProjectReihe
             Battle,
             GameOver
         }
-        GameState currentGameState = GameState.Battle;
+        GameState currentGameState = GameState.TitleScreen;
 
         Menu menu;
         SpriteFont menuFont;
+        SpriteFont startFont;
+        SpriteFont endFont1;
+        SpriteFont endFont2;
+        SpriteFont endFont3;
         KeyboardState keyboardState;
         KeyboardState lastKeyboardState;
 
@@ -39,8 +43,12 @@ namespace ProjectReihe
         float battleTimer = 0.0f;
         int battleStep = 0;
 
+        bool gameOver = false;
+        bool win;
+
         Character cadwyn;
         Character bossSlime;
+        Sprite logo;
 
         SpriteFont _spr_font;
         int _total_frames = 0;
@@ -68,8 +76,6 @@ namespace ProjectReihe
 
             menu = new Menu(Menu.MenuType.Battle);
             chain = new List<Skills.Skill>();
-            cadwyn = new Character(Character.CharacterType.Cadwyn, Content.Load<Texture2D>("cadwynsheet"), new Vector2(graphics.PreferredBackBufferWidth - (385/2 * 1.5f + 25), graphics.PreferredBackBufferHeight - (327/2 * 1.5f + 25)), 384, 327);
-            bossSlime = new Character(Character.CharacterType.BossSlime, Content.Load<Texture2D>("slimesheet"), new Vector2(25 + 384/2 * 1.5f, 25 + 327/2 * 1.5f), 384, 327);
 
             base.Initialize();
         }
@@ -80,9 +86,16 @@ namespace ProjectReihe
         /// </summary>
         protected override void LoadContent()
         {
+            logo = new Sprite(Content.Load<Texture2D>("logo"), new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), 1074, 900);
+            cadwyn = new Character(Character.CharacterType.Cadwyn, Content.Load<Texture2D>("cadwynsheet"), new Vector2(graphics.PreferredBackBufferWidth - (385 / 2 * 1.5f + 25), graphics.PreferredBackBufferHeight - (327 / 2 * 1.5f + 25)), 384, 327);
+            bossSlime = new Character(Character.CharacterType.BossSlime, Content.Load<Texture2D>("slimesheet"), new Vector2(25 + 384 / 2 * 1.5f, 25 + 327 / 2 * 1.5f), 384, 327);
             // Put the name of the font
             _spr_font = Content.Load<SpriteFont>("FPS");
+            startFont = Content.Load<SpriteFont>("StartFont");
             menuFont = Content.Load<SpriteFont>("MenuFont");
+            endFont1 = Content.Load<SpriteFont>("EndFont1");
+            endFont2 = Content.Load<SpriteFont>("EndFont2");
+            endFont3 = Content.Load<SpriteFont>("EndFont3");
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -110,7 +123,7 @@ namespace ProjectReihe
             // Update
             _elapsed_time += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
             battleTimer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
- 
+
             // 1 Second has passed
             if (_elapsed_time >= 1000.0f)
             {
@@ -119,7 +132,7 @@ namespace ProjectReihe
                 _elapsed_time = 0;
             }
 
-            if (showMenu)
+            if (showMenu && !gameOver)
             {
                 switch (battleStep)
                 {
@@ -172,81 +185,107 @@ namespace ProjectReihe
                             battleTimer = 0;
                             battleStep = 0;
                             showMenu = false;
-                        }
-                        break;
-                }
-               
-            }
- 
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || keyboardState.IsKeyDown(Keys.Escape))
-                this.Exit();
-
-            switch(currentGameState)
-            {
-                case GameState.Battle:
-                    if (KeyPressed(Keys.Down))
-                        menu.Iterator += 1;
-                    else if (KeyPressed(Keys.Up))
-                        menu.Iterator -= 1;
-                    else if (KeyPressed(Keys.Space))
-                    {
-                        if (menu.CurrentMenuType == Menu.MenuType.Battle && menu.Iterator == 0)
-                            menu = new Menu(Menu.MenuType.Fight);
-                        else if (menu.CurrentMenuType == Menu.MenuType.Fight)
-                        {
-                            if (skillCount < 3)
-                            {
-                                switch (menu.Iterator)
-                                {
-                                    case 0:
-                                        chain.Add(Skills.Skill.Attack);
-                                        menu.InfoText += "Attack ";
-                                        skillCount++;
-                                        if (skillCount == 3)
-                                            showMenu = true;
-                                        break;
-                                    case 1:
-                                        chain.Add(Skills.Skill.Fire);
-                                        menu.InfoText += "Fire ";
-                                        skillCount++;
-                                        if (skillCount == 3)
-                                        {
-                                            showMenu = true;
-                                            chain = new List<Skills.Skill>();
-                                            menu.InfoText = String.Empty;
-                                        }
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                    else if (KeyPressed(Keys.Back))
-                    {
-                        if (menu.CurrentMenuType == Menu.MenuType.Fight)
-                        {
                             menu = new Menu(Menu.MenuType.Battle);
                             skillCount = 0;
                             chain = new List<Skills.Skill>();
                             menu.InfoText = string.Empty;
+                            if (cadwyn.HP == 0)
+                            {
+                                win = false;
+                                gameOver = true;
+                                showMenu = true;
+                            }
+                            else if (bossSlime.HP == 0)
+                            {
+                                win = true;
+                                gameOver = true;
+                                showMenu = true;
+                            }
+                        }
+                        break;
+                }
+            }
+
+            // Allows the game to exit
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || KeyPressed(Keys.Escape))
+                this.Exit();
+
+            switch (currentGameState)
+            {
+                case GameState.TitleScreen:
+                    if (KeyPressed(Keys.Space))
+                        currentGameState = GameState.Battle;
+                    break;
+
+                case GameState.Battle:
+                    if (!showMenu)
+                    {
+                        if (KeyPressed(Keys.Down))
+                            menu.Iterator += 1;
+                        else if (KeyPressed(Keys.Up))
+                            menu.Iterator -= 1;
+                        else if (KeyPressed(Keys.Space))
+                        {
+                            if (menu.CurrentMenuType == Menu.MenuType.Battle && menu.Iterator == 0)
+                                menu = new Menu(Menu.MenuType.Fight);
+                            else if (menu.CurrentMenuType == Menu.MenuType.Fight)
+                            {
+                                if (skillCount < 3)
+                                {
+                                    switch (menu.Iterator)
+                                    {
+                                        case 0:
+                                            chain.Add(Skills.Skill.Attack);
+                                            menu.InfoText += "Attack ";
+                                            skillCount++;
+                                            if (skillCount == 3)
+                                                showMenu = true;
+                                            break;
+                                        case 1:
+                                            chain.Add(Skills.Skill.Fire);
+                                            menu.InfoText += "Fire ";
+                                            skillCount++;
+                                            if (skillCount == 3)
+                                            {
+                                                showMenu = true;
+                                                chain = new List<Skills.Skill>();
+                                                menu.InfoText = String.Empty;
+                                            }
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+                        else if (KeyPressed(Keys.Back))
+                        {
+                            if (menu.CurrentMenuType == Menu.MenuType.Fight)
+                            {
+                                menu = new Menu(Menu.MenuType.Battle);
+                                skillCount = 0;
+                                chain = new List<Skills.Skill>();
+                                menu.InfoText = string.Empty;
+                            }
+                        }
+                        if (skillCount == 3)
+                        {
+                            List<Skills.Skill> slimeChain = new List<Skills.Skill>();
+                            slimeChain.Add(Skills.Skill.Attack);
+                            slimeChain.Add(Skills.Skill.Fire);
+                            slimeChain.Add(Skills.Skill.Attack);
+                            Console.WriteLine(string.Format("Boss Slime HP before: {0:0}/{1:0}", bossSlime.HP, bossSlime.MaxHP));
+                            cadwyn.attack(bossSlime, chain);
+                            Console.WriteLine(string.Format("Boss Slime HP after: {0:0}/{1:0}", bossSlime.HP, bossSlime.MaxHP));
+                            Console.WriteLine(string.Format("Cadwyn HP before: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP));
+                            bossSlime.attack(cadwyn, slimeChain);
+                            Console.WriteLine(string.Format("Cadwyn HP after: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP));
+                            showMenu = true;
                         }
                     }
-                    if (skillCount == 3)
-                    {
-                        List<Skills.Skill> slimeChain = new List<Skills.Skill>();
-                        slimeChain.Add(Skills.Skill.Attack);
-                        slimeChain.Add(Skills.Skill.Fire);
-                        slimeChain.Add(Skills.Skill.Attack);
-                        Console.WriteLine(string.Format("Boss Slime HP before: {0:0}/{1:0}", bossSlime.HP, bossSlime.MaxHP));
-                        cadwyn.attack(bossSlime, chain);
-                        Console.WriteLine(string.Format("Boss Slime HP after: {0:0}/{1:0}", bossSlime.HP, bossSlime.MaxHP));
-                        Console.WriteLine(string.Format("Cadwyn HP before: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP));
-                        bossSlime.attack(cadwyn, slimeChain);
-                        Console.WriteLine(string.Format("Cadwyn HP before: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP));
-                        //showMenu = false;
-                        skillCount = 0;
-                    }
-                    break;
+
+                    if (gameOver && battleTimer >= 1000)
+                        currentGameState = GameState.GameOver;
+
+                    break;  //end Battle
             }
 
             // TODO: Add your update logic here
@@ -260,21 +299,45 @@ namespace ProjectReihe
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.DarkGreen);
+            GraphicsDevice.Clear(Color.DarkRed);
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
             // Only update total frames when drawing
             _total_frames++;
 
-            if (!showMenu)
+            switch (currentGameState)
             {
-                menu.DrawMenu(spriteBatch, graphics.PreferredBackBufferWidth, menuFont);
-            }
-            spriteBatch.DrawString(menuFont, menu.InfoText, new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), Color.White);
+                case GameState.TitleScreen:
+                    logo.Draw(spriteBatch, 1.2f);
+                    DrawShadowedText(startFont, "Press Space to begin!", new Vector2(graphics.PreferredBackBufferWidth / 2 - startFont.MeasureString("Press Space to begin!").X / 2,
+                        graphics.PreferredBackBufferHeight - 100), Color.LightGray);
+                    break;
 
-            cadwyn.Draw(spriteBatch, 1.5f);
-            bossSlime.Draw(spriteBatch, 1.5f);
+                case GameState.Battle:
+                    if (!showMenu)
+                    {
+                        menu.DrawMenu(spriteBatch, graphics.PreferredBackBufferWidth, menuFont);
+                    }
+                    spriteBatch.DrawString(menuFont, menu.InfoText, new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), Color.White);
+
+                    cadwyn.Draw(spriteBatch, 1.5f);
+                    bossSlime.Draw(spriteBatch, 1.5f);
+                    break;
+
+                case GameState.GameOver:
+                    if (win)
+                        DrawShadowedText(endFont1, "Game Over. You win!", new Vector2(graphics.PreferredBackBufferWidth / 2 - endFont1.MeasureString("Game Over. You win!").X / 2,
+                            graphics.PreferredBackBufferHeight / 2 - endFont1.MeasureString("Game Over. You win!").Y), Color.LightGray);
+                    else
+                        DrawShadowedText(endFont1, "Game Over. You lose!", new Vector2(graphics.PreferredBackBufferWidth / 2 - endFont1.MeasureString("Game Over. You lose!").X / 2,
+                            graphics.PreferredBackBufferHeight / 2 - -endFont1.MeasureString("Game Over. You lose!").Y), Color.LightGray);
+                    DrawShadowedText(endFont2, "Thank you for playing!", new Vector2(graphics.PreferredBackBufferWidth / 2 - endFont2.MeasureString("Thank you for playing!").X / 2,
+                        graphics.PreferredBackBufferHeight / 2 - endFont2.MeasureString("Thank you for playing!").Y + 50), Color.LightGray);
+                    DrawShadowedText(endFont3, "Made by Team 11", new Vector2(graphics.PreferredBackBufferWidth - endFont3.MeasureString("Made by Team 11").X,
+                        graphics.PreferredBackBufferHeight - endFont3.MeasureString("Made by Team 11").Y), Color.LightGray);
+                    break;
+            }
 
             spriteBatch.DrawString(_spr_font, string.Format("FPS={0}", _fps), Vector2.Zero, Color.White);
             spriteBatch.End();
@@ -304,5 +367,14 @@ namespace ProjectReihe
         }
 
         #endregion
+
+        private void DrawShadowedText(SpriteFont textFont, string textString, Vector2 textPosition, Color textColor)
+        {
+            Vector2 textShadow = new Vector2(textPosition.X + 1f, textPosition.Y + 1f);
+
+            spriteBatch.DrawString(textFont, textString, textShadow, Color.DarkGray);
+            spriteBatch.DrawString(textFont, textString, textShadow + new Vector2(0.5f, 0.5f), Color.Black);
+            spriteBatch.DrawString(textFont, textString, textPosition, textColor);
+        }
     }
 }
