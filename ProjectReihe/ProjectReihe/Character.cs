@@ -84,10 +84,10 @@ namespace ProjectReihe
             switch (type)
             {
                 case CharacterType.Cadwyn:
-                    _hp = 350;
-                    _maxHP = 350;
+                    _hp = 500;
+                    _maxHP = 500;
                     _atk = 50;
-                    _matk = 40;
+                    _matk = 50;
                     _def = 25;
                     _mdef = 15;
                     break;

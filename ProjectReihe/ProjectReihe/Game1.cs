@@ -193,13 +193,12 @@ namespace ProjectReihe
                             menu.InfoText = string.Empty;
                             if (cadwyn.HP == 0)
                             {
-                                win = false;
                                 gameOver = true;
                                 showMenu = true;
+                                break;
                             }
                             else if (bossSlime.HP == 0)
                             {
-                                win = true;
                                 gameOver = true;
                                 showMenu = true;
                             }
@@ -246,13 +245,9 @@ namespace ProjectReihe
                                         case 1:
                                             chain.Add(Skills.Skill.Fire);
                                             menu.InfoText += "Fire ";
-                                            skillCount++;
                                             if (skillCount == 3)
-                                            {
                                                 showMenu = true;
-                                                chain = new List<Skills.Skill>();
-                                                menu.InfoText = String.Empty;
-                                            }
+                                            skillCount++;
                                             break;
                                     }
                                 }
@@ -281,6 +276,13 @@ namespace ProjectReihe
                             bossSlime.attack(cadwyn, slimeChain);
                             Console.WriteLine(string.Format("Cadwyn HP after: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP));
                             showMenu = true;
+                            if (cadwyn.HP == 0)
+                            {
+                                win = false;
+                                cadwyn.HP = cadwyn.PreviousHealth;
+                            }
+                            else if (bossSlime.HP == 0)
+                                win = true;
                         }
                     }
 
@@ -323,6 +325,11 @@ namespace ProjectReihe
                         menu.DrawMenu(spriteBatch, graphics.PreferredBackBufferWidth, menuFont);
                     }
                     spriteBatch.DrawString(menuFont, menu.InfoText, new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), Color.White);
+
+                    DrawShadowedText(menuFont, string.Format("Cadwyn HP: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP),
+                        new Vector2(0, 576 - 2 * menuFont.MeasureString(string.Format("Cadwyn HP: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP)).Y), Color.White);
+                    DrawShadowedText(menuFont, string.Format("Boss Slime HP: {0:0}/{1:0}", bossSlime.HP, bossSlime.MaxHP),
+                        new Vector2(0, 576 - 1 * menuFont.MeasureString(string.Format("Boss Slime HP: {0:0}/{1:0}", bossSlime.HP, bossSlime.MaxHP)).Y), Color.White);
 
                     cadwyn.Draw(spriteBatch, 1.5f);
                     bossSlime.Draw(spriteBatch, 1.5f);
