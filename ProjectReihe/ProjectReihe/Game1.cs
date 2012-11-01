@@ -49,6 +49,7 @@ namespace ProjectReihe
         Character cadwyn;
         Character bossSlime;
         Sprite logo;
+        Sprite battle;
 
         SpriteFont _spr_font;
         int _total_frames = 0;
@@ -87,6 +88,7 @@ namespace ProjectReihe
         protected override void LoadContent()
         {
             logo = new Sprite(Content.Load<Texture2D>("logo"), new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), 1074, 900);
+            battle = new Sprite(Content.Load<Texture2D>("BattleBackground"), new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), 1280, 720);
             cadwyn = new Character(Character.CharacterType.Cadwyn, Content.Load<Texture2D>("cadwynsheet"), new Vector2(graphics.PreferredBackBufferWidth - (385 / 2 * 1.5f + 25), graphics.PreferredBackBufferHeight - (327 / 2 * 1.5f + 25)), 384, 327);
             bossSlime = new Character(Character.CharacterType.BossSlime, Content.Load<Texture2D>("slimesheet"), new Vector2(25 + 384 / 2 * 1.5f, 25 + 327 / 2 * 1.5f), 384, 327);
             // Put the name of the font
@@ -315,6 +317,7 @@ namespace ProjectReihe
                     break;
 
                 case GameState.Battle:
+                    battle.Draw(spriteBatch, 1);
                     if (!showMenu)
                     {
                         menu.DrawMenu(spriteBatch, graphics.PreferredBackBufferWidth, menuFont);
@@ -331,7 +334,7 @@ namespace ProjectReihe
                             graphics.PreferredBackBufferHeight / 2 - endFont1.MeasureString("Game Over. You win!").Y), Color.LightGray);
                     else
                         DrawShadowedText(endFont1, "Game Over. You lose!", new Vector2(graphics.PreferredBackBufferWidth / 2 - endFont1.MeasureString("Game Over. You lose!").X / 2,
-                            graphics.PreferredBackBufferHeight / 2 - -endFont1.MeasureString("Game Over. You lose!").Y), Color.LightGray);
+                            graphics.PreferredBackBufferHeight / 2 - endFont1.MeasureString("Game Over. You lose!").Y), Color.LightGray);
                     DrawShadowedText(endFont2, "Thank you for playing!", new Vector2(graphics.PreferredBackBufferWidth / 2 - endFont2.MeasureString("Thank you for playing!").X / 2,
                         graphics.PreferredBackBufferHeight / 2 - endFont2.MeasureString("Thank you for playing!").Y + 50), Color.LightGray);
                     DrawShadowedText(endFont3, "Made by Team 11", new Vector2(graphics.PreferredBackBufferWidth - endFont3.MeasureString("Made by Team 11").X,
