@@ -50,6 +50,7 @@ namespace ProjectReihe
         Character bossSlime;
         Sprite logo;
         Sprite battle;
+        Song battleTheme;
 
         SpriteFont _spr_font;
         int _total_frames = 0;
@@ -89,6 +90,7 @@ namespace ProjectReihe
         {
             logo = new Sprite(Content.Load<Texture2D>("logo"), new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), 1074, 900);
             battle = new Sprite(Content.Load<Texture2D>("BattleBackground"), new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), 1280, 720);
+            battleTheme = Content.Load<Song>("Ghostpocalypse - 7 Master");
             cadwyn = new Character(Character.CharacterType.Cadwyn, Content.Load<Texture2D>("cadwynsheet"), new Vector2(graphics.PreferredBackBufferWidth - (385 / 2 * 1.5f + 25), graphics.PreferredBackBufferHeight - (327 / 2 * 1.5f + 25)), 384, 327);
             bossSlime = new Character(Character.CharacterType.BossSlime, Content.Load<Texture2D>("slimesheet"), new Vector2(25 + 384 / 2 * 1.5f, 25 + 327 / 2 * 1.5f), 384, 327);
             // Put the name of the font
@@ -215,7 +217,11 @@ namespace ProjectReihe
             {
                 case GameState.TitleScreen:
                     if (KeyPressed(Keys.Space))
+                    {
                         currentGameState = GameState.Battle;
+                        MediaPlayer.Play(battleTheme);
+                        MediaPlayer.IsRepeating = true;
+                    }
                     break;
 
                 case GameState.Battle:
@@ -276,18 +282,21 @@ namespace ProjectReihe
                             bossSlime.attack(cadwyn, slimeChain);
                             Console.WriteLine(string.Format("Cadwyn HP after: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP));
                             showMenu = true;
-                            if (cadwyn.HP == 0)
+                            if (bossSlime.HP == 0)
+                                win = true;
+                            else if (cadwyn.HP == 0)
                             {
                                 win = false;
                                 cadwyn.HP = cadwyn.PreviousHealth;
                             }
-                            else if (bossSlime.HP == 0)
-                                win = true;
                         }
                     }
 
                     if (gameOver && battleTimer >= 1000)
+                    {
+                        MediaPlayer.Stop();
                         currentGameState = GameState.GameOver;
+                    }
 
                     break;  //end Battle
             }
