@@ -139,6 +139,11 @@ namespace ProjectReihe
                             enemy.HP -= this.MATK - enemy.MDEF;
                     }
                     #endregion
+                    #region Attack, Attack, Ice
+                    #endregion
+                    #region Attack, Attack, Bolt
+                    #endregion
+
                 }
                 #endregion
                 #region Attack, Fire
@@ -174,6 +179,135 @@ namespace ProjectReihe
                         else
                             enemy.HP -= this.MATK - enemy.MDEF;
                         enemy.Burned = true;
+                    }
+                    #endregion
+                    #region Attack, Fire, Ice
+                    else if (chain[2] == Skills.Skill.Ice)
+                    {
+                        if (enemy.Burned == true)
+                        {
+                            enemy.HP -= this.MATK - enemy.MDEF / 2;
+                            enemy.Burned = false;
+                        }
+                        else
+                            enemy.HP -= this.MATK - enemy.MDEF;
+                    }
+                    #endregion
+                    #region Attack, Fire, Bolt
+                    else if (chain[2] == Skills.Skill.Bolt)
+                    {
+                        if (enemy.Burned == true)
+                        {
+                            enemy.HP -= (int)Math.Round((this.MATK - enemy.MDEF / 2)*1.15);
+                        }
+                        else
+                            enemy.HP -= this.MATK - enemy.MDEF;
+                    }
+                    #endregion
+                }
+                #endregion
+                #region Attack, Ice
+                else if (chain[1] == Skills.Skill.Ice)
+                {
+                    if (enemy.Burned == true)
+                    {
+                        enemy.HP -= this.MATK - enemy.MDEF / 2;
+                        enemy.Burned = false;
+                    }
+                    else
+                        enemy.HP -= this.MATK - enemy.MDEF;
+                    #region Attack, Ice, Attack
+                    if (chain[2] == Skills.Skill.Attack)
+                    {
+                        if (roll.Next(10) == 0)
+                            enemy.HP -= this.ATK * 2 - enemy.DEF;
+                        else
+                            enemy.HP -= this.ATK - enemy.DEF;
+                    }
+                    #endregion
+                    #region Attack, Ice, Fire
+                    else if (chain[2] == Skills.Skill.Fire)
+                    {
+                        if (enemy.Burned == true)
+                            enemy.HP -= this.MATK - enemy.MDEF / 2;
+                        else
+                            enemy.HP -= this.MATK - enemy.MDEF;
+                    }
+                    #endregion
+                    #region Attack, Ice, Ice
+                    else if (chain[2] == Skills.Skill.Ice)
+                    {
+                        if (enemy.Burned == true)
+                        {
+                            enemy.HP -= this.MATK - enemy.MDEF / 2;
+                            enemy.Burned = false;
+                        }
+                        else
+                            enemy.HP -= this.MATK - enemy.MDEF;
+                    }
+                    #endregion
+                    #region Attack, Ice, Bolt
+                    else if (chain[2] == Skills.Skill.Bolt)
+                    {
+                        if (enemy.Burned == true)
+                        {
+                            enemy.HP -= (int)Math.Round((this.MATK - enemy.MDEF / 2) * 1.15);
+                        }
+                        else
+                            enemy.HP -= this.MATK - enemy.MDEF;
+                    }
+                    #endregion
+                }
+                #endregion
+                #region Attack, Bolt
+                else if (chain[1] == Skills.Skill.Bolt)
+                {
+                    if (enemy.Burned == true)
+                    {
+                        enemy.HP -= this.MATK - enemy.MDEF / 2;
+                        enemy.Burned = false;
+                    }
+                    else
+                        enemy.HP -= this.MATK - enemy.MDEF;
+                    #region Attack, Bolt, Attack
+                    if (chain[2] == Skills.Skill.Attack)
+                    {
+                        if (roll.Next(10) == 0)
+                            enemy.HP -= this.ATK * 2 - enemy.DEF;
+                        else
+                            enemy.HP -= this.ATK - enemy.DEF;
+                    }
+                    #endregion
+                    #region Attack, Bolt, Fire
+                    else if (chain[2] == Skills.Skill.Fire)
+                    {
+                        if (enemy.Burned == true)
+                            enemy.HP -= this.MATK - enemy.MDEF / 2;
+                        else
+                            enemy.HP -= this.MATK - enemy.MDEF;
+                    }
+                    #endregion
+                    #region Attack, Bolt, Ice
+                    else if (chain[2] == Skills.Skill.Ice)
+                    {
+                        if (enemy.Burned == true)
+                        {
+                            enemy.HP -= this.MATK - enemy.MDEF / 2;
+                            enemy.Burned = false;
+                        }
+                        else
+                            enemy.HP -= this.MATK - enemy.MDEF;
+                    }
+                    #endregion
+                    #region Attack, Bolt, Bolt
+                    else if (chain[2] == Skills.Skill.Bolt)
+                    {
+                        if (enemy.Burned == true)
+                        {
+                            enemy.HP -= (int)Math.Round((this.MATK - enemy.MDEF / 2) * 1.15);
+                        }
+                        else
+                            enemy.HP -= this.MATK - enemy.MDEF;
                     }
                     #endregion
                 }
