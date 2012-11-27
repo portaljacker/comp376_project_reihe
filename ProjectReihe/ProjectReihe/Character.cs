@@ -107,18 +107,21 @@ namespace ProjectReihe
             PreviousHealth = _hp;
             int bonus = 0;  //bonus magic damage as percent of magic attack
 
+            #region Attack
             if (chain[0] == Skills.Skill.Attack)
             {
                 if (roll.Next(10) == 0)
                     enemy.HP -= this.ATK * 2 - enemy.DEF;
                 else
                     enemy.HP -= this.ATK - enemy.DEF;
+                #region Attack, Attack
                 if (chain[1] == Skills.Skill.Attack)
                 {
                     if (roll.Next(6) == 0)
                         enemy.HP -= this.ATK * 2 - enemy.DEF;
                     else
                         enemy.HP -= this.ATK - enemy.DEF;
+                    #region Attack, Attack, Attack
                     if (chain[2] == Skills.Skill.Attack)
                     {
                         if (roll.Next(4) == 0)
@@ -126,6 +129,8 @@ namespace ProjectReihe
                         else
                             enemy.HP -= this.ATK - enemy.DEF;
                     }
+                    #endregion
+                    #region Attack, Attack, Fire
                     else if (chain[2] == Skills.Skill.Fire)
                     {
                         if (enemy.Burned == true)
@@ -133,13 +138,17 @@ namespace ProjectReihe
                         else
                             enemy.HP -= this.MATK - enemy.MDEF;
                     }
+                    #endregion
                 }
+                #endregion
+                #region Attack, Fire
                 else if (chain[1] == Skills.Skill.Fire)
                 {
                     if (enemy.Burned == true)
                         enemy.HP -= this.MATK - enemy.MDEF / 2;
                     else
                         enemy.HP -= this.MATK - enemy.MDEF;
+                    #region Attack, Fire, Attack
                     if (chain[2] == Skills.Skill.Attack)
                     {
                         bonus += 10;
@@ -156,6 +165,8 @@ namespace ProjectReihe
                             enemy.HP -= this.ATK - enemy.DEF;
                         }
                     }
+                    #endregion
+                    #region Attack, Fire, Fire
                     else if (chain[2] == Skills.Skill.Fire)
                     {
                         if (enemy.Burned == true)
@@ -164,11 +175,16 @@ namespace ProjectReihe
                             enemy.HP -= this.MATK - enemy.MDEF;
                         enemy.Burned = true;
                     }
+                    #endregion
                 }
+                #endregion
             }
+            #endregion
+            #region Fire
             else if (chain[0] == Skills.Skill.Fire)
             {
                 enemy.HP -= this.MATK - enemy.MDEF;
+                #region Fire, Attack
                 if (chain[1] == Skills.Skill.Attack)
                 {
                     bonus += 10;
@@ -176,6 +192,7 @@ namespace ProjectReihe
                         enemy.HP -= this.MATK / bonus - enemy.MDEF / 2;
                     else
                         enemy.HP -= this.MATK /bonus - enemy.MDEF;
+                    #region Fire, Attack, Attack
                     if (chain[2] == Skills.Skill.Attack)
                     {
                         if (roll.Next(10) == 0)
@@ -183,6 +200,8 @@ namespace ProjectReihe
                         else
                             enemy.HP -= this.ATK - enemy.DEF;
                     }
+                    #endregion
+                    #region Fire, Attack, Fire
                     else if (chain[2] == Skills.Skill.Fire)
                     {
                         if (enemy.Burned == true)
@@ -191,7 +210,10 @@ namespace ProjectReihe
                             enemy.HP -= this.MATK - enemy.MDEF;
                         enemy.Burned = true;
                     }
+                    #endregion
                 }
+                #endregion
+                #region Fire, Fire
                 else if (chain[1] == Skills.Skill.Fire)
                 {
                     if (enemy.Burned == true)
@@ -199,6 +221,7 @@ namespace ProjectReihe
                     else
                         enemy.HP -= this.MATK - enemy.MDEF;
                     enemy.Burned = true;
+                    #region Fire, Fire, Attack
                     if (chain[2] == Skills.Skill.Attack)
                     {
                         if (roll.Next(10) == 0)
@@ -211,6 +234,8 @@ namespace ProjectReihe
                         else
                             enemy.HP -= this.MATK / bonus - enemy.MDEF;
                     }
+                    #endregion
+                    #region Fire, Fire, Fire
                     else if (chain[2] == Skills.Skill.Fire)
                     {
                         //FIREBALL!!!
@@ -219,8 +244,11 @@ namespace ProjectReihe
                         else
                             enemy.HP -= this.MATK * 2 - enemy.MDEF;
                     }
+                    #endregion
                 }
+                #endregion
             }
+            #endregion
         }
 
         public void Draw(SpriteBatch spriteBatch, float scale)
