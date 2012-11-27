@@ -254,7 +254,7 @@ namespace ProjectReihe
                             enemy.HP -= (int)Math.Round((this.MATK - enemy.MDEF / 2) * 1.15);
                         }
                         else
-                            enemy.HP -= this.MATK - enemy.MDEF;
+                            enemy.HP -= (int)Math.Round((this.MATK - enemy.MDEF) * 1.15);
                     }
                     #endregion
                 }
@@ -264,8 +264,7 @@ namespace ProjectReihe
                 {
                     if (enemy.Burned == true)
                     {
-                        enemy.HP -= this.MATK - enemy.MDEF / 2;
-                        enemy.Burned = false;
+                        enemy.HP -= (int)Math.Round((this.MATK - enemy.MDEF / 2) * 1.15);
                     }
                     else
                         enemy.HP -= this.MATK - enemy.MDEF;
@@ -304,10 +303,10 @@ namespace ProjectReihe
                     {
                         if (enemy.Burned == true)
                         {
-                            enemy.HP -= (int)Math.Round((this.MATK - enemy.MDEF / 2) * 1.15);
+                            enemy.HP -= (int)Math.Round((this.MATK - enemy.MDEF / 2) * 1.25);
                         }
                         else
-                            enemy.HP -= this.MATK - enemy.MDEF;
+                            enemy.HP -= (int)Math.Round((this.MATK - enemy.MDEF) * 1.25);
                     }
                     #endregion
                 }
@@ -380,6 +379,10 @@ namespace ProjectReihe
                     }
                     #endregion
                 }
+                #endregion
+                #region Fire, Ice
+                #endregion
+                #region Fire, Bolt
                 #endregion
             }
             #endregion
