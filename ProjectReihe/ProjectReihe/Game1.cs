@@ -251,9 +251,23 @@ namespace ProjectReihe
                                         case 1:
                                             chain.Add(Skills.Skill.Fire);
                                             menu.InfoText += "Fire ";
+                                            skillCount++;
                                             if (skillCount == 3)
                                                 showMenu = true;
+                                            break;
+                                        case 2:
+                                            chain.Add(Skills.Skill.Ice);
+                                            menu.InfoText += "Ice ";
                                             skillCount++;
+                                            if (skillCount == 3)
+                                                showMenu = true;
+                                            break;
+                                        case 3:
+                                            chain.Add(Skills.Skill.Bolt);
+                                            menu.InfoText += "Bolt ";
+                                            skillCount++;
+                                            if (skillCount == 3)
+                                                showMenu = true;
                                             break;
                                     }
                                 }
