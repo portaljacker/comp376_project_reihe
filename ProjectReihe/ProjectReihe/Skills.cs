@@ -9,7 +9,9 @@ namespace ProjectReihe
         public enum Skill
         {
             Attack,
-            Fire
+            Fire,
+            Ice,
+            Bolt
         }
     }
 }

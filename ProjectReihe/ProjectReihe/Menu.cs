@@ -51,6 +51,8 @@ namespace ProjectReihe
                     MenuItems = new List<string>();
                     MenuItems.Add("Attack");
                     MenuItems.Add("Fire");
+                    MenuItems.Add("Ice");
+                    MenuItems.Add("Bolt");
                     Iterator = 0;
                     InfoText = string.Empty;
                     break;
