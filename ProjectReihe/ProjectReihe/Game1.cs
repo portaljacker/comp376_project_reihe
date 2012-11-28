@@ -35,6 +35,8 @@ namespace ProjectReihe
         SpriteFont endFont3;
         KeyboardState keyboardState;
         KeyboardState lastKeyboardState;
+        GamePadState playerOneState;
+        GamePadState lastPlayerOneState;
 
         List<Skills.Skill> chain;
         int skillCount = 0;
@@ -124,6 +126,9 @@ namespace ProjectReihe
         {
             lastKeyboardState = keyboardState;
             keyboardState = Keyboard.GetState();
+            lastPlayerOneState = playerOneState;
+            playerOneState = GamePad.GetState(PlayerIndex.One);
+            
             // Update
             _elapsed_time += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
             battleTimer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -210,13 +215,13 @@ namespace ProjectReihe
             }
 
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || KeyPressed(Keys.Escape))
+            if (playerOneState.Buttons.Back == ButtonState.Pressed || KeyPressed(Keys.Escape))
                 this.Exit();
 
             switch (currentGameState)
             {
                 case GameState.TitleScreen:
-                    if (KeyPressed(Keys.Space))
+                    if (KeyPressed(Keys.Space) || ButtonPressed(Buttons.A) || ButtonPressed(Buttons.Start))
                     {
                         currentGameState = GameState.Battle;
                         MediaPlayer.Play(battleTheme);
@@ -227,11 +232,11 @@ namespace ProjectReihe
                 case GameState.Battle:
                     if (!showMenu)
                     {
-                        if (KeyPressed(Keys.Down))
+                        if (KeyPressed(Keys.Down) || ButtonPressed(Buttons.DPadDown))
                             menu.Iterator += 1;
-                        else if (KeyPressed(Keys.Up))
+                        else if (KeyPressed(Keys.Up) || ButtonPressed(Buttons.DPadUp))
                             menu.Iterator -= 1;
-                        else if (KeyPressed(Keys.Space))
+                        else if (KeyPressed(Keys.Space) || ButtonPressed(Buttons.A))
                         {
                             if (menu.CurrentMenuType == Menu.MenuType.Battle && menu.Iterator == 0)
                                 menu = new Menu(Menu.MenuType.Fight);
@@ -259,7 +264,7 @@ namespace ProjectReihe
                                 }
                             }
                         }
-                        else if (KeyPressed(Keys.Back))
+                        else if (KeyPressed(Keys.Back) || ButtonPressed(Buttons.A))
                         {
                             if (menu.CurrentMenuType == Menu.MenuType.Fight)
                             {
@@ -384,6 +389,27 @@ namespace ProjectReihe
         public bool KeyDown(Keys key)
         {
             return keyboardState.IsKeyDown(key);
+        }
+
+        #endregion
+
+        #region Game Pad Region
+
+        public bool ButtonReleased(Buttons button)
+        {
+            return playerOneState.IsButtonUp(button) &&
+                lastPlayerOneState.IsButtonDown(button);
+        }
+
+        public bool ButtonPressed(Buttons button)
+        {
+            return playerOneState.IsButtonDown(button) &&
+                lastPlayerOneState.IsButtonUp(button);
+        }
+
+        public bool ButtonDown(Buttons button)
+        {
+            return playerOneState.IsButtonDown(button);
         }
 
         #endregion
