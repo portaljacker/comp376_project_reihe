@@ -45,11 +45,17 @@ namespace ProjectReihe
         float battleTimer = 0.0f;
         int battleStep = 0;
 
+        bool[] showPrevHP = {false,false};
+
         bool gameOver = false;
         bool win;
 
         Character cadwyn;
         Character bossSlime;
+        Character rat;
+        Character zombie;
+        Character slime;
+        Character enemy;
         Sprite logo;
         Sprite battle;
         Song battleTheme;
@@ -57,6 +63,7 @@ namespace ProjectReihe
         SpriteFont _spr_font;
         int _total_frames = 0;
         float _elapsed_time = 0.0f;
+        float _frame_timer = 0.0f;
         int _fps = 0;
 
         public Game1()
@@ -93,8 +100,11 @@ namespace ProjectReihe
             logo = new Sprite(Content.Load<Texture2D>("logo"), new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), 1074, 900);
             battle = new Sprite(Content.Load<Texture2D>("BattleBackground"), new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), 1280, 720);
             battleTheme = Content.Load<Song>("Ghostpocalypse - 7 Master");
-            cadwyn = new Character(Character.CharacterType.Cadwyn, Content.Load<Texture2D>("cadwynsheet2"), new Vector2(graphics.PreferredBackBufferWidth - (385 / 2 * 1.5f + 25), graphics.PreferredBackBufferHeight - (327 / 2 * 1.5f + 25)), 384, 327);
-            bossSlime = new Character(Character.CharacterType.BossSlime, Content.Load<Texture2D>("slimesheet2"), new Vector2(25 + 384 / 2 * 1.5f, 25 + 327 / 2 * 1.5f), 384, 327);
+            cadwyn = new Character(Character.CharacterType.Cadwyn, Content.Load<Texture2D>("cadwynsheet3"), new Vector2(graphics.PreferredBackBufferWidth - (385 / 2 * 1.5f + 25), graphics.PreferredBackBufferHeight - (327 / 2 * 1.5f + 25)), 384, 327);
+            bossSlime = new Character(Character.CharacterType.BossSlime, Content.Load<Texture2D>("slimesheet3"), new Vector2(25 + 384 / 2 * 1.5f, 25 + 327 / 2 * 1.5f), 384, 327);
+            rat = new Character(Character.CharacterType.LabRat, Content.Load<Texture2D>("ratSheet"), new Vector2(25 + 384 / 2 * 1.5f, 35 + 327 / 2 * 1.5f), 384, 327);
+            zombie = new Character(Character.CharacterType.ZombieJanitor, Content.Load<Texture2D>("zombiesheet"), new Vector2(25 + 384 / 2 * 1.5f, 25 + 327 / 2 * 1.5f), 384, 327);
+            slime = new Character(Character.CharacterType.Slime, Content.Load<Texture2D>("minislime2"), new Vector2(25 + 384 / 2 * 1.5f, 35 + 327 / 2 * 1.5f), 384, 327);
             // Put the name of the font
             _spr_font = Content.Load<SpriteFont>("FPS");
             startFont = Content.Load<SpriteFont>("StartFont");
@@ -104,6 +114,8 @@ namespace ProjectReihe
             endFont3 = Content.Load<SpriteFont>("EndFont3");
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            enemy = zombie;
 
             // TODO: use this.Content to load your game content here
         }
@@ -148,49 +160,222 @@ namespace ProjectReihe
                     case 0:
                         if (battleTimer >= 500.0f)
                         {
-                            cadwyn.CurrentFrame++;
-                            battleTimer = 0;
-                            battleStep++;
+                            if (chain[0] == Skills.Skill.Attack)
+                            {
+                                if (cadwyn.HP > cadwyn.MaxHP / 4)
+                                {
+                                    cadwyn.CurrentRow = 0;
+                                }
+
+                                else
+                                {
+                                    cadwyn.CurrentRow = 2;
+                                }
+                                _frame_timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                                if (_frame_timer > 50)
+                                {
+                                    cadwyn.CurrentFrame++;
+                                    _frame_timer = 0;
+                                }
+                                if (cadwyn.CurrentFrame == 5)
+                                {
+                                    cadwyn.CurrentFrame = 0;
+                                    battleTimer = 0;
+                                    battleStep++;
+                                }
+                            }
+
+                            else
+                            {
+                                if (cadwyn.HP > cadwyn.MaxHP / 4)
+                                {
+                                    cadwyn.CurrentRow = 1;
+                                }
+
+                                else
+                                {
+                                    cadwyn.CurrentRow = 3;
+                                }
+                                _frame_timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                                if (_frame_timer > 50)
+                                {
+                                    cadwyn.CurrentFrame++;
+                                    _frame_timer = 0;
+                                }
+                                if (cadwyn.CurrentFrame == 3)
+                                {
+                                    cadwyn.CurrentFrame = 0;
+                                    battleTimer = 0;
+                                    battleStep++;
+                                }
+                            }
+
                         }
                         break;
                     case 1:
-                        if (battleTimer >= 750.0f)
+                        if (battleTimer >= 500.0f)
                         {
-                            cadwyn.CurrentFrame = 0;
-                            bossSlime.Position -= new Vector2(25, 0);
-                            battleTimer = 0;
-                            battleStep++;
+                            if (chain[1] == Skills.Skill.Attack)
+                            {
+                                if (cadwyn.HP > cadwyn.MaxHP / 4)
+                                {
+                                    cadwyn.CurrentRow = 0;
+                                }
+
+                                else
+                                {
+                                    cadwyn.CurrentRow = 2;
+                                }
+                                 _frame_timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                                if (_frame_timer > 50)
+                                {
+                                    cadwyn.CurrentFrame++;
+                                    _frame_timer = 0;
+                                }
+                                if (cadwyn.CurrentFrame == 5)
+                                {
+                                    cadwyn.CurrentFrame = 0;
+                                    battleTimer = 0;
+                                    battleStep++;
+                                }
+                            }
+
+                            else
+                            {
+                                if (cadwyn.HP > cadwyn.MaxHP / 4)
+                                {
+                                    cadwyn.CurrentRow = 1;
+                                }
+
+                                else
+                                {
+                                    cadwyn.CurrentRow = 3;
+                                }
+                                _frame_timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                                if (_frame_timer > 50)
+                                {
+                                    cadwyn.CurrentFrame++;
+                                    _frame_timer = 0;
+                                }
+                                if (cadwyn.CurrentFrame == 3)
+                                {
+                                    cadwyn.CurrentFrame = 0;
+                                    battleTimer = 0;
+                                    battleStep++;
+                                }
+                            }
+
                         }
                         break;
                     case 2:
-                        if (battleTimer >= 750.0f)
+                        if (battleTimer >= 500.0f)
                         {
-                            bossSlime.Position += new Vector2(25, 0);
-                            battleTimer = 0;
-                            battleStep++;
+                            if (chain[2] == Skills.Skill.Attack)
+                            {
+                                if (cadwyn.HP > cadwyn.MaxHP / 4)
+                                {
+                                    cadwyn.CurrentRow = 0;
+                                }
+
+                                else
+                                {
+                                    cadwyn.CurrentRow = 2;
+                                }
+                                _frame_timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                                if (_frame_timer > 50)
+                                {
+                                    cadwyn.CurrentFrame++;
+                                    _frame_timer = 0;
+                                }
+                                if (cadwyn.CurrentFrame == 5)
+                                {
+                                    cadwyn.CurrentFrame = 0;
+                                    battleTimer = 0;
+                                    battleStep++;
+                                }
+                            }
+
+                            else
+                            {
+                                if (cadwyn.HP > cadwyn.MaxHP / 4)
+                                {
+                                    cadwyn.CurrentRow = 1;
+                                }
+
+                                else
+                                {
+                                    cadwyn.CurrentRow = 3;
+                                }
+                                _frame_timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                                if (_frame_timer > 50)
+                                {
+                                    cadwyn.CurrentFrame++;
+                                    _frame_timer = 0;
+                                }
+                                if (cadwyn.CurrentFrame == 3)
+                                {
+                                    cadwyn.CurrentFrame = 0;
+                                    
+                                    battleTimer = 0;
+                                    battleStep++;
+                                }
+                            }
+
                         }
                         break;
                     case 3:
-                        if (battleTimer >= 1000.0f)
+                        if (battleTimer >= 750.0f)
                         {
-                            bossSlime.Position += new Vector2(25, 0);
+                            cadwyn.CurrentFrame = 0;
+                            enemy.Position -= new Vector2(25, 0);
+                            showPrevHP[0] = false;
                             battleTimer = 0;
                             battleStep++;
                         }
                         break;
                     case 4:
-                        if (battleTimer >= 500.0f)
+                        if (battleTimer >= 750.0f)
                         {
-                            bossSlime.Position -= new Vector2(25, 0);
-                            cadwyn.Position += new Vector2(25, 0);
+                            enemy.Position += new Vector2(25, 0);
                             battleTimer = 0;
                             battleStep++;
                         }
                         break;
                     case 5:
+                        if (battleTimer >= 1000.0f)
+                        {
+                            
+                            _frame_timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                            if (_frame_timer > 100)
+                            {
+                                enemy.CurrentFrame++;
+                                _frame_timer = 0;
+                                enemy.Position += new Vector2(25, 0);
+                            }
+                            if (enemy.CurrentFrame == 3)
+                            {
+                                enemy.CurrentFrame = 0;
+                                enemy.Position += new Vector2(-50, 0);
+                                cadwyn.Position += new Vector2(25, 0);
+                                showPrevHP[1] = false;
+                                battleTimer = 0;
+                                battleStep++;
+                            }
+                        }
+                        break;
+                    case 6:
                         if (battleTimer >= 500.0f)
                         {
+                            enemy.CurrentFrame = 0;
+                            enemy.Position -= new Vector2(25, 0);
                             cadwyn.Position -= new Vector2(25, 0);
+                            battleTimer = 0;
+                            battleStep++;
+                        }
+                        break;
+                    case 7:
+                        if (battleTimer >= 500.0f)
+                        {
                             battleTimer = 0;
                             battleStep = 0;
                             showMenu = false;
@@ -204,7 +389,7 @@ namespace ProjectReihe
                                 showMenu = true;
                                 break;
                             }
-                            else if (bossSlime.HP == 0)
+                            else if (enemy.HP == 0)
                             {
                                 gameOver = true;
                                 showMenu = true;
@@ -294,14 +479,16 @@ namespace ProjectReihe
                             slimeChain.Add(Skills.Skill.Attack);
                             slimeChain.Add(Skills.Skill.Fire);
                             slimeChain.Add(Skills.Skill.Attack);
-                            Console.WriteLine(string.Format("Boss Slime HP before: {0:0}/{1:0}", bossSlime.HP, bossSlime.MaxHP));
-                            cadwyn.attack(bossSlime, chain);
-                            Console.WriteLine(string.Format("Boss Slime HP after: {0:0}/{1:0}", bossSlime.HP, bossSlime.MaxHP));
+                            Console.WriteLine(string.Format("Boss Slime HP before: {0:0}/{1:0}", enemy.HP, enemy.MaxHP));
+                            cadwyn.attack(enemy, chain);
+                            Console.WriteLine(string.Format("Boss Slime HP after: {0:0}/{1:0}", enemy.HP, enemy.MaxHP));
                             Console.WriteLine(string.Format("Cadwyn HP before: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP));
-                            bossSlime.attack(cadwyn, slimeChain);
+                            enemy.attack(cadwyn, slimeChain);
                             Console.WriteLine(string.Format("Cadwyn HP after: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP));
                             showMenu = true;
-                            if (bossSlime.HP == 0)
+                            showPrevHP[0] = true;
+                            showPrevHP[1] = true;
+                            if (enemy.HP == 0)
                             {
                                 win = true;
                                 cadwyn.HP = cadwyn.PreviousHealth;
@@ -354,13 +541,74 @@ namespace ProjectReihe
                     }
                     spriteBatch.DrawString(menuFont, menu.InfoText, new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), Color.White);
 
-                    DrawShadowedText(menuFont, string.Format("Cadwyn HP: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP),
-                        new Vector2(0, 576 - 2 * menuFont.MeasureString(string.Format("Cadwyn HP: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP)).Y), Color.White);
-                    DrawShadowedText(menuFont, string.Format("Boss Slime HP: {0:0}/{1:0}", bossSlime.HP, bossSlime.MaxHP),
-                        new Vector2(0, 576 - 1 * menuFont.MeasureString(string.Format("Boss Slime HP: {0:0}/{1:0}", bossSlime.HP, bossSlime.MaxHP)).Y), Color.White);
+                    if (showPrevHP[1] == true)
+                    {
+                        DrawShadowedText(menuFont, string.Format("Cadwyn HP: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP),
+                            new Vector2(0, 576 - 2 * menuFont.MeasureString(string.Format("Cadwyn HP: {0:0}/{1:0}", cadwyn.PreviousHealth, cadwyn.MaxHP)).Y), Color.White);
+                    }
+                    else
+                    {
+                        DrawShadowedText(menuFont, string.Format("Cadwyn HP: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP),
+                            new Vector2(0, 576 - 2 * menuFont.MeasureString(string.Format("Cadwyn HP: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP)).Y), Color.White);
+                    }
+
+                    switch (enemy.CharType)
+                    {
+                        case Character.CharacterType.BossSlime:
+                            if (showPrevHP[0] == true)
+                            {
+                                DrawShadowedText(menuFont, string.Format("Boss Slime HP: {0:0}/{1:0}", enemy.HP, enemy.MaxHP),
+                                    new Vector2(0, 576 - 1 * menuFont.MeasureString(string.Format("Boss Slime HP: {0:0}/{1:0}", enemy.PreviousHealth, enemy.MaxHP)).Y), Color.White);
+                            }
+                            else
+                            {
+                                DrawShadowedText(menuFont, string.Format("Boss Slime HP: {0:0}/{1:0}", enemy.HP, enemy.MaxHP),
+                                    new Vector2(0, 576 - 1 * menuFont.MeasureString(string.Format("Boss Slime HP: {0:0}/{1:0}", enemy.HP, enemy.MaxHP)).Y), Color.White);
+                            }
+                            break;
+
+                        case Character.CharacterType.Slime:
+                            if (showPrevHP[0] == true)
+                            {
+                                DrawShadowedText(menuFont, string.Format("Slime HP: {0:0}/{1:0}", enemy.HP, enemy.MaxHP),
+                                    new Vector2(0, 576 - 1 * menuFont.MeasureString(string.Format("Slime HP: {0:0}/{1:0}", enemy.PreviousHealth, enemy.MaxHP)).Y), Color.White);
+                            }
+                            else
+                            {
+                                DrawShadowedText(menuFont, string.Format("Slime HP: {0:0}/{1:0}", enemy.HP, enemy.MaxHP),
+                                    new Vector2(0, 576 - 1 * menuFont.MeasureString(string.Format("Slime HP: {0:0}/{1:0}", enemy.HP, enemy.MaxHP)).Y), Color.White);
+                            }
+                            break;
+
+                        case Character.CharacterType.LabRat:
+                            if (showPrevHP[0] == true)
+                            {
+                                DrawShadowedText(menuFont, string.Format("Lab Rat HP: {0:0}/{1:0}", enemy.HP, enemy.MaxHP),
+                                    new Vector2(0, 576 - 1 * menuFont.MeasureString(string.Format("Lab Rat HP: {0:0}/{1:0}", enemy.PreviousHealth, enemy.MaxHP)).Y), Color.White);
+                            }
+                            else
+                            {
+                                DrawShadowedText(menuFont, string.Format("Lab Rat: {0:0}/{1:0}", enemy.HP, enemy.MaxHP),
+                                    new Vector2(0, 576 - 1 * menuFont.MeasureString(string.Format("Lab Rat HP: {0:0}/{1:0}", enemy.HP, enemy.MaxHP)).Y), Color.White);
+                            }
+                            break;
+
+                        case Character.CharacterType.ZombieJanitor:
+                            if (showPrevHP[0] == true)
+                            {
+                                DrawShadowedText(menuFont, string.Format("Zombie Janitor HP: {0:0}/{1:0}", enemy.HP, enemy.MaxHP),
+                                    new Vector2(0, 576 - 1 * menuFont.MeasureString(string.Format("Zombie Janitor HP: {0:0}/{1:0}", enemy.PreviousHealth, enemy.MaxHP)).Y), Color.White);
+                            }
+                            else
+                            {
+                                DrawShadowedText(menuFont, string.Format("Zombie Janitor HP: {0:0}/{1:0}", enemy.HP, enemy.MaxHP),
+                                    new Vector2(0, 576 - 1 * menuFont.MeasureString(string.Format("Zombie Janitor HP: {0:0}/{1:0}", enemy.HP, enemy.MaxHP)).Y), Color.White);
+                            }
+                            break;
+                    }   
 
                     cadwyn.Draw(spriteBatch, 1.5f);
-                    bossSlime.Draw(spriteBatch, 1.5f);
+                    enemy.Draw(spriteBatch, 1.5f);
                     break;
 
                 case GameState.GameOver:

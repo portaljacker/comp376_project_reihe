@@ -13,7 +13,10 @@ namespace ProjectReihe
         public enum CharacterType
         {
             Cadwyn,
-            BossSlime
+            BossSlime,
+            Slime,
+            LabRat,
+            ZombieJanitor
         }
 
         int _hp;    //health
@@ -75,6 +78,8 @@ namespace ProjectReihe
             }
         }
 
+        public CharacterType CharType { get; set; }
+
         public int PreviousHealth { get; set; }
         public bool Burned { get; set; }
         public bool Chilled { get; set; }
@@ -84,6 +89,7 @@ namespace ProjectReihe
         {
             Burned = false;
             Chilled = false;
+            CharType = type;
             switch (type)
             {
                 case CharacterType.Cadwyn:
@@ -100,7 +106,31 @@ namespace ProjectReihe
                     _atk = 75;
                     _matk = 35;
                     _def = 30;
+                    _mdef = 30;
+                    break;
+                case CharacterType.Slime:
+                    _hp = 200;
+                    _maxHP = 200;
+                    _atk = 35;
+                    _matk = 35;
+                    _def = 20;
+                    _mdef = 30;
+                    break;
+                case CharacterType.LabRat:
+                    _hp = 250;
+                    _maxHP = 250;
+                    _atk = 45;
+                    _matk = 35;
+                    _def = 30;
                     _mdef = 25;
+                    break;
+                case CharacterType.ZombieJanitor:
+                    _hp = 200;
+                    _maxHP = 200;
+                    _atk = 55;
+                    _matk = 35;
+                    _def = 30;
+                    _mdef = 15;
                     break;
             }
         }

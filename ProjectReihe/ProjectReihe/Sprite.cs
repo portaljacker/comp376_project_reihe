@@ -93,6 +93,7 @@ namespace ProjectReihe
             set
             {
                 currentRow = value;
+                sourceRect = new Rectangle(Width * currentFrame, Height * currentRow, Width, Height);
             }
         }
 

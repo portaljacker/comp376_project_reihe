@@ -112,22 +112,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="cadwynsheet2.png">
-      <Name>cadwynsheet2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="zombiesheet.png">
       <Name>zombiesheet</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="minislime.png">
-      <Name>minislime</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -140,15 +126,29 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="slimesheet2.png">
-      <Name>slimesheet2</Name>
+    <Compile Include="tileset.png">
+      <Name>tileset</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="tileset.png">
-      <Name>tileset</Name>
+    <Compile Include="slimesheet3.png">
+      <Name>slimesheet3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="minislime2.png">
+      <Name>minislime2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="cadwynsheet3.png">
+      <Name>cadwynsheet3</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
