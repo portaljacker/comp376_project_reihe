@@ -69,7 +69,7 @@ namespace ProjectReihe
             }
         }
 
-        public int CurrrentFrame
+        public int CurrentFrame
         {
             get
             {
@@ -83,7 +83,7 @@ namespace ProjectReihe
             }
         }
 
-        public int CurrrentRow
+        public int CurrentRow
         {
             get
             {

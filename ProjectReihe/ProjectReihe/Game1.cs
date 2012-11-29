@@ -148,7 +148,7 @@ namespace ProjectReihe
                     case 0:
                         if (battleTimer >= 500.0f)
                         {
-                            cadwyn.CurrrentFrame++;
+                            cadwyn.CurrentFrame++;
                             battleTimer = 0;
                             battleStep++;
                         }
@@ -156,7 +156,7 @@ namespace ProjectReihe
                     case 1:
                         if (battleTimer >= 750.0f)
                         {
-                            cadwyn.CurrrentFrame = 0;
+                            cadwyn.CurrentFrame = 0;
                             bossSlime.Position -= new Vector2(25, 0);
                             battleTimer = 0;
                             battleStep++;
@@ -278,7 +278,7 @@ namespace ProjectReihe
                                 }
                             }
                         }
-                        else if (KeyPressed(Keys.Back) || ButtonPressed(Buttons.A))
+                        else if (KeyPressed(Keys.Back) || ButtonPressed(Buttons.B))
                         {
                             if (menu.CurrentMenuType == Menu.MenuType.Fight)
                             {
