@@ -22,6 +22,7 @@ namespace ProjectReihe
         enum GameState
         {
             TitleScreen,
+            Map,
             Battle,
             GameOver
         }
@@ -45,17 +46,15 @@ namespace ProjectReihe
         float battleTimer = 0.0f;
         int battleStep = 0;
 
-        bool[] showPrevHP = {false,false};
+        bool[] showPrevHP = { false, false };
 
         bool gameOver = false;
         bool win;
 
         Character cadwyn;
         Character bossSlime;
-        Character rat;
-        Character zombie;
-        Character slime;
         Character enemy;
+        static Random rand;
         Sprite logo;
         Sprite battle;
         Sprite bubble;
@@ -66,6 +65,20 @@ namespace ProjectReihe
         float _elapsed_time = 0.0f;
         float _frame_timer = 0.0f;
         int _fps = 0;
+
+
+        Sprite cad;
+        Texture2D cads;
+        Texture2D tiles;
+
+        float timer = 0f;
+        float idle_timer = 0f;
+        float interval = 100f;
+        Map m;
+        Vector2 trans;
+        Vector2 cadPos;
+        int scale;
+        int stepCounter;
 
         public Game1()
         {
@@ -102,11 +115,7 @@ namespace ProjectReihe
             battle = new Sprite(Content.Load<Texture2D>("BattleBackground"), new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), 1280, 720);
             bubble = new Sprite(Content.Load<Texture2D>("Bubble"), new Vector2(graphics.PreferredBackBufferWidth - 175, 200), 350, 350);
             battleTheme = Content.Load<Song>("Ghostpocalypse - 7 Master");
-            cadwyn = new Character(Character.CharacterType.Cadwyn, Content.Load<Texture2D>("cadwynsheet3"), new Vector2(graphics.PreferredBackBufferWidth - (385 / 2 * 1.5f + 25), graphics.PreferredBackBufferHeight - (327 / 2 * 1.5f + 25)), 384, 327);
             bossSlime = new Character(Character.CharacterType.BossSlime, Content.Load<Texture2D>("slimesheet3"), new Vector2(25 + 384 / 2 * 1.5f, 25 + 327 / 2 * 1.5f), 384, 327);
-            rat = new Character(Character.CharacterType.LabRat, Content.Load<Texture2D>("ratSheet"), new Vector2(25 + 384 / 2 * 1.5f, 35 + 327 / 2 * 1.5f), 384, 327);
-            zombie = new Character(Character.CharacterType.ZombieJanitor, Content.Load<Texture2D>("zombiesheet"), new Vector2(25 + 384 / 2 * 1.5f, 25 + 327 / 2 * 1.5f), 384, 327);
-            slime = new Character(Character.CharacterType.Slime, Content.Load<Texture2D>("minislime2"), new Vector2(25 + 384 / 2 * 1.5f, 35 + 327 / 2 * 1.5f), 384, 327);
             // Put the name of the font
             _spr_font = Content.Load<SpriteFont>("FPS");
             startFont = Content.Load<SpriteFont>("StartFont");
@@ -116,8 +125,18 @@ namespace ProjectReihe
             endFont3 = Content.Load<SpriteFont>("EndFont3");
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            rand = new Random();
 
-            enemy = zombie;
+
+            cadPos = new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2);
+            cads = Content.Load<Texture2D>("cadsmallsheet");
+            cad = new Sprite(cads, cadPos, 25, 35);
+            tiles = Content.Load<Texture2D>("tileset");
+            m = new Map(tiles, scale);
+            trans = new Vector2(0, 0); //No translation at the start.
+            scale = 1;
+
+            stepCounter = 0;
 
             // TODO: use this.Content to load your game content here
         }
@@ -142,7 +161,7 @@ namespace ProjectReihe
             keyboardState = Keyboard.GetState();
             lastPlayerOneState = playerOneState;
             playerOneState = GamePad.GetState(PlayerIndex.One);
-            
+
             // Update
             _elapsed_time += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
             battleTimer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -228,7 +247,7 @@ namespace ProjectReihe
                                 {
                                     cadwyn.CurrentRow = 2;
                                 }
-                                 _frame_timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                                _frame_timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
                                 if (_frame_timer > 50)
                                 {
                                     cadwyn.CurrentFrame++;
@@ -317,7 +336,7 @@ namespace ProjectReihe
                                 if (cadwyn.CurrentFrame == 3)
                                 {
                                     cadwyn.CurrentFrame = 0;
-                                    
+
                                     battleTimer = 0;
                                     battleStep++;
                                 }
@@ -346,7 +365,7 @@ namespace ProjectReihe
                     case 5:
                         if (battleTimer >= 1000.0f)
                         {
-                            
+
                             _frame_timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
                             if (_frame_timer > 100)
                             {
@@ -397,6 +416,9 @@ namespace ProjectReihe
                                 showMenu = true;
                             }
                         }
+                        if (win)
+                            if (enemy.CharType == Character.CharacterType.BossSlime)
+                                currentGameState = GameState.GameOver;
                         break;
                 }
             }
@@ -410,9 +432,169 @@ namespace ProjectReihe
                 case GameState.TitleScreen:
                     if (KeyPressed(Keys.Space) || ButtonPressed(Buttons.A) || ButtonPressed(Buttons.Start))
                     {
-                        currentGameState = GameState.Battle;
+                        currentGameState = GameState.Map;
                         MediaPlayer.Play(battleTheme);
                         MediaPlayer.IsRepeating = true;
+                    }
+                    break;
+
+                case GameState.Map:
+                    bool is_idle = true;
+
+                    KeyboardState ks = Keyboard.GetState();
+                    Keys[] keys = ks.GetPressedKeys();
+
+                    foreach (Keys key in keys)
+                    {
+                        switch (key)
+                        {
+                            case Keys.Up:
+                                cad.CurrentRow = 5;
+                                is_idle = false;
+                                trans += new Vector2(0, 4);
+
+                                break;
+
+                            case Keys.Down:
+                                cad.CurrentRow = 4;
+                                is_idle = false;
+                                trans += new Vector2(0, -4);
+
+                                break;
+
+                            case Keys.Left:
+                                cad.CurrentRow = 7;
+                                is_idle = false;
+                                trans += new Vector2(4, 0);
+
+                                break;
+
+                            case Keys.Right:
+                                cad.CurrentRow = 6;
+                                is_idle = false;
+                                trans += new Vector2(-4, 0);
+
+                                break;
+                        }
+                    }
+
+                    if (ButtonDown(Buttons.DPadDown))
+                    {
+                        cad.CurrentRow = 4;
+                        is_idle = false;
+                        trans += new Vector2(0, -4);
+                    }
+
+                    else if (ButtonDown(Buttons.DPadUp))
+                    {
+                        cad.CurrentRow = 5;
+                        is_idle = false;
+                        trans += new Vector2(0, 4);
+                    }
+
+                    else if (ButtonDown(Buttons.DPadLeft))
+                    {
+                        cad.CurrentRow = 7;
+                        is_idle = false;
+                        trans += new Vector2(4, 0);
+                    }
+
+                    else if (ButtonDown(Buttons.DPadRight))
+                    {
+                        cad.CurrentRow = 6;
+                        is_idle = false;
+                        trans += new Vector2(-4, 0);
+                    }
+
+                    if (-400 < trans.X && trans.X < -350 && 1450 > trans.Y && trans.Y > 1350)
+                    {
+                        currentGameState = GameState.Battle;
+                        enemy = bossSlime;
+                        win = false;
+                        showMenu = false;
+                        gameOver = false;
+                        cadwyn = new Character(Character.CharacterType.Cadwyn, Content.Load<Texture2D>("cadwynsheet3"), new Vector2(graphics.PreferredBackBufferWidth - (385 / 2 * 1.5f + 25), graphics.PreferredBackBufferHeight - (327 / 2 * 1.5f + 25)), 384, 327);            
+                    }
+
+                    if (is_idle)
+                    {
+
+                        if (cad.CurrentRow == 4)
+                            cad.CurrentRow = 0;
+
+                        if (cad.CurrentRow == 5)
+                            cad.CurrentRow = 1;
+
+                        if (cad.CurrentRow == 6)
+                            cad.CurrentRow = 2;
+
+                        if (cad.CurrentRow == 7)
+                            cad.CurrentRow = 3;
+
+                        cad.CurrentFrame = 0;
+
+                        idle_timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+
+                        if (idle_timer > 3000)  //Wait for a specific time
+                        {
+
+                            cad.CurrentFrame++;
+
+                        }
+
+                        if (idle_timer > 3100)  //Wait for a specific time
+                        {
+
+                            cad.CurrentFrame++;
+
+                        }
+
+                        if (idle_timer > 3200)  //Wait for a specific time
+                        {
+
+                            cad.CurrentFrame++;
+
+                        }
+
+                        if (idle_timer > 3300)  //Wait for a specific time
+                        {
+
+                            cad.CurrentFrame = 0;
+                            idle_timer = 0f;
+
+                        }
+                    }
+
+
+                    else   //Character is moving 
+                    {
+                        idle_timer = 0f;
+                        timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+
+                        if (timer > interval)
+                        {
+                            //Show the next frame
+                            cad.CurrentFrame++;
+                            //Reset the timer
+                            timer = 0f;
+                        }
+
+                        if (cad.CurrentFrame == 3)  //Depending on the sprites per row of the spritesheet 
+                        {
+                            cad.CurrentFrame = 0;
+                        }
+
+
+                        stepCounter++;
+                    }
+
+                    cad.SourceRect = new Rectangle(cad.Width * cad.CurrentFrame, cad.Height * cad.CurrentRow, cad.Width, cad.Height);
+
+                    if (stepCounter > 200)
+                    {
+                        stepCounter = 0;
+                        currentGameState = GameState.Battle;
+                        LoadBattle();
                     }
                     break;
 
@@ -519,7 +701,7 @@ namespace ProjectReihe
                     if (gameOver && battleTimer >= 1000)
                     {
                         MediaPlayer.Stop();
-                        currentGameState = GameState.GameOver;
+                        currentGameState = GameState.Map;
                     }
 
                     break;  //end Battle
@@ -547,8 +729,13 @@ namespace ProjectReihe
             {
                 case GameState.TitleScreen:
                     logo.Draw(spriteBatch, 1.2f);
-                    DrawShadowedText(startFont, "Press Space to begin!", new Vector2(graphics.PreferredBackBufferWidth / 2 - startFont.MeasureString("Press Space to begin!").X / 2,
+                    DrawShadowedText(startFont, "Start Game", new Vector2(graphics.PreferredBackBufferWidth / 2 - startFont.MeasureString("Start Game").X / 2,
                         graphics.PreferredBackBufferHeight - 100), Color.LightGray);
+                    break;
+
+                case GameState.Map:
+                    m.Draw(spriteBatch, scale, trans, cadPos);
+                    cad.Draw(spriteBatch, scale);
                     break;
 
                 case GameState.Battle:
@@ -607,7 +794,7 @@ namespace ProjectReihe
                             }
                             else
                             {
-                                DrawShadowedText(menuFont, string.Format("Lab Rat: {0:0}/{1:0}", enemy.HP, enemy.MaxHP),
+                                DrawShadowedText(menuFont, string.Format("Lab Rat HP: {0:0}/{1:0}", enemy.HP, enemy.MaxHP),
                                     new Vector2(0, 576 - 1 * menuFont.MeasureString(string.Format("Lab Rat HP: {0:0}/{1:0}", enemy.HP, enemy.MaxHP)).Y), Color.White);
                             }
                             break;
@@ -624,7 +811,7 @@ namespace ProjectReihe
                                     new Vector2(0, 576 - 1 * menuFont.MeasureString(string.Format("Zombie Janitor HP: {0:0}/{1:0}", enemy.HP, enemy.MaxHP)).Y), Color.White);
                             }
                             break;
-                    }   
+                    }
 
                     cadwyn.Draw(spriteBatch, 1.5f);
                     enemy.Draw(spriteBatch, 1.5f);
@@ -694,6 +881,31 @@ namespace ProjectReihe
         }
 
         #endregion
+
+        private void LoadBattle()
+        {
+            win = false;
+            showMenu = false;
+            gameOver = false;
+            switch (rand.Next(3))
+            {
+                case 0:
+                    enemy = new Character(Character.CharacterType.Slime, Content.Load<Texture2D>("minislime2"), new Vector2(25 + 384 / 2 * 1.5f, 35 + 327 / 2 * 1.5f), 384, 327);
+                    enemy.HP = enemy.MaxHP;
+                    break;
+
+                case 1:
+                    enemy = new Character(Character.CharacterType.ZombieJanitor, Content.Load<Texture2D>("zombiesheet"), new Vector2(25 + 384 / 2 * 1.5f, 25 + 327 / 2 * 1.5f), 384, 327);
+                    enemy.HP = enemy.MaxHP;
+                    break;
+
+                case 2:
+                    enemy = new Character(Character.CharacterType.LabRat, Content.Load<Texture2D>("ratSheet"), new Vector2(25 + 384 / 2 * 1.5f, 35 + 327 / 2 * 1.5f), 384, 327);
+                    enemy.HP = enemy.MaxHP;
+                    break;
+            }
+            cadwyn = new Character(Character.CharacterType.Cadwyn, Content.Load<Texture2D>("cadwynsheet3"), new Vector2(graphics.PreferredBackBufferWidth - (385 / 2 * 1.5f + 25), graphics.PreferredBackBufferHeight - (327 / 2 * 1.5f + 25)), 384, 327);            
+        }
 
         private void DrawShadowedText(SpriteFont textFont, string textString, Vector2 textPosition, Color textColor)
         {
