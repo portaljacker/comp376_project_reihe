@@ -52,6 +52,7 @@ namespace ProjectReihe
         Character bossSlime;
         Sprite logo;
         Sprite battle;
+        Sprite bubble;
         Song battleTheme;
 
         SpriteFont _spr_font;
@@ -92,6 +93,7 @@ namespace ProjectReihe
         {
             logo = new Sprite(Content.Load<Texture2D>("logo"), new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), 1074, 900);
             battle = new Sprite(Content.Load<Texture2D>("BattleBackground"), new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), 1280, 720);
+            bubble = new Sprite(Content.Load<Texture2D>("Bubble"), new Vector2(graphics.PreferredBackBufferWidth - 175, 200), 350, 350);
             battleTheme = Content.Load<Song>("Ghostpocalypse - 7 Master");
             cadwyn = new Character(Character.CharacterType.Cadwyn, Content.Load<Texture2D>("cadwynsheet2"), new Vector2(graphics.PreferredBackBufferWidth - (385 / 2 * 1.5f + 25), graphics.PreferredBackBufferHeight - (327 / 2 * 1.5f + 25)), 384, 327);
             bossSlime = new Character(Character.CharacterType.BossSlime, Content.Load<Texture2D>("slimesheet2"), new Vector2(25 + 384 / 2 * 1.5f, 25 + 327 / 2 * 1.5f), 384, 327);
@@ -248,31 +250,47 @@ namespace ProjectReihe
                                     {
                                         case 0:
                                             chain.Add(Skills.Skill.Attack);
-                                            menu.InfoText += "Attack ";
                                             skillCount++;
                                             if (skillCount == 3)
+                                            {
                                                 showMenu = true;
+                                                menu.InfoText += "Attack";
+                                            }
+                                            else
+                                                menu.InfoText += "Attack-->";
                                             break;
                                         case 1:
                                             chain.Add(Skills.Skill.Fire);
-                                            menu.InfoText += "Fire ";
                                             skillCount++;
                                             if (skillCount == 3)
+                                            {
                                                 showMenu = true;
+                                                menu.InfoText += "Fire";
+                                            }
+                                            else
+                                                menu.InfoText += "Fire-->";
                                             break;
                                         case 2:
                                             chain.Add(Skills.Skill.Ice);
-                                            menu.InfoText += "Ice ";
                                             skillCount++;
                                             if (skillCount == 3)
+                                            {
                                                 showMenu = true;
+                                                menu.InfoText += "Ice";
+                                            }
+                                            else
+                                                menu.InfoText += "Ice-->";
                                             break;
                                         case 3:
                                             chain.Add(Skills.Skill.Bolt);
-                                            menu.InfoText += "Bolt ";
                                             skillCount++;
                                             if (skillCount == 3)
+                                            {
                                                 showMenu = true;
+                                                menu.InfoText += "Bolt";
+                                            }
+                                            else
+                                                menu.InfoText += "Bolt-->";
                                             break;
                                     }
                                 }
@@ -350,9 +368,10 @@ namespace ProjectReihe
                     battle.Draw(spriteBatch, 1);
                     if (!showMenu)
                     {
+                        bubble.Draw(spriteBatch, 1f);
                         menu.DrawMenu(spriteBatch, graphics.PreferredBackBufferWidth, menuFont);
                     }
-                    spriteBatch.DrawString(menuFont, menu.InfoText, new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2), Color.White);
+                    spriteBatch.DrawString(menuFont, menu.InfoText, new Vector2(graphics.PreferredBackBufferWidth / 2 - 50, graphics.PreferredBackBufferHeight / 2 + 15), Color.White);
 
                     DrawShadowedText(menuFont, string.Format("Cadwyn HP: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP),
                         new Vector2(0, 576 - 2 * menuFont.MeasureString(string.Format("Cadwyn HP: {0:0}/{1:0}", cadwyn.HP, cadwyn.MaxHP)).Y), Color.White);
