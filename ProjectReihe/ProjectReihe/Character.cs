@@ -973,7 +973,7 @@ namespace ProjectReihe
             #endregion
         }
 
-        public void Draw(SpriteBatch spriteBatch, float scale)
+        public new void Draw(SpriteBatch spriteBatch, float scale)
         {
             if (Burned)
             {

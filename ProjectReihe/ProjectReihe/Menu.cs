@@ -47,7 +47,7 @@ namespace ProjectReihe
                     InfoText = string.Empty;
                     break;
                 case MenuType.Fight:
-                    Title = "Fight";
+                    Title = "Fight -->";
                     MenuItems = new List<string>();
                     MenuItems.Add("Attack");
                     MenuItems.Add("Fire");
@@ -71,16 +71,16 @@ namespace ProjectReihe
 
         public void DrawMenu(SpriteBatch batch, int screenWidth, SpriteFont font)
         {
-            batch.DrawString(font, Title, new Vector2(screenWidth / 2 - font.MeasureString(Title).X / 2, 20), Color.White);
             int yPos = 100;
             for (int i = 0; i < GetNumberOfOptions(); i++)
             {
-                Color colour = Color.White;
+                Color colour = Color.Black;
                 if (i == Iterator)
                 {
                     colour = Color.Gray;
+                    batch.DrawString(font, Title, new Vector2(screenWidth - 175 - 3 * font.MeasureString(Title).X / 2, yPos), Color.Black);
                 }
-                batch.DrawString(font, GetItem(i), new Vector2(screenWidth / 2 - font.MeasureString(GetItem(i)).X / 2, yPos), colour);
+                batch.DrawString(font, GetItem(i), new Vector2(screenWidth - 175 - font.MeasureString(GetItem(i)).X / 2, yPos), colour);
                 yPos += 50;
             }
         }
